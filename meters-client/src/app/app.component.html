@@ -1,0 +1,20 @@
+<div class="app">
+  <app-header></app-header>
+  <div class="page-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<p-sidebar [visible]="sidebarOpened()" (visibleChange)="setSidebarOpened($event)">
+  <ng-template pTemplate="header">
+    <h3>Chats</h3>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <app-chat-list></app-chat-list>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="sidebar-footer">
+      <p-button styleClass="w-full flex justify-content-center" text>Logout</p-button>
+    </div>
+  </ng-template>
+</p-sidebar>

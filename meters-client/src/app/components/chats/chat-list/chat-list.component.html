@@ -1,0 +1,12 @@
+<div class="chats-list">
+  @for (chat of chats(); track chat.id) {
+    <div class="chat flex flex-row justify-content-between mt-2 cursor-pointer align-items-center py-1 px-2 border-round" routerLink="/chats/{{chat.id}}">
+      <div class="label">{{chat.name}}</div>
+      <div class="actions">
+        <p-button icon="pi pi-trash" text></p-button>
+      </div>
+    </div>
+  } @empty {
+    No chats :(
+  }
+</div>
