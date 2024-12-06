@@ -1,0 +1,10 @@
+{
+    "SEND": {
+        "description": "Sending meter readings",
+        "required_params": ["METER_TYPE", "VALUE"]
+    },
+    "READ": {
+        "description": "Reading meter data",
+        "required_params": ["METER_TYPE", "START_DATE", "END_DATE"]
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "ELECTRICITY": {
+      "description": "Electricity meter"
+    },
+    "WATER": {
+      "description": "Water meter"
+    },
+    "GAZ": {
+      "description": "Gas meter"
+    }
+  }
+  
