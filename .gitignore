@@ -168,3 +168,5 @@ recognise-api/.env
 /meters-client/.idea
 meters-client/node_modules/.bin/acorn
 /meters-client/node_modules
+/.idea
+/telegram_bot

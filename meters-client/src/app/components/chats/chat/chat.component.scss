@@ -5,6 +5,27 @@
   & .content {
     height: calc(100vh - var(--header-height) - var(--input-height));
     overflow-y: auto;
+
+    & .message-container {
+      &.system {
+        justify-content: flex-start;
+
+        & .message {
+          background: #5b5858;
+          display: inline-block;
+          word-wrap: break-word;
+          max-width: 45%;
+          animation: typewriter 4s steps(30, end), blink 0.5s step-end infinite;
+        }
+      }
+
+      &.yours {
+        justify-content: flex-end;
+        & .message {
+          max-width: 45%;
+          background: #1f1f1f;
+        }
+      }
+    }
   }
 }
-

@@ -1,16 +1,16 @@
 <div class="register flex justify-content-center align-items-center">
-  <form>
+  <form [formGroup]="form">
     <h2>Register</h2>
     <div class="flex flex-column gap-2">
       <label for="email">Email</label>
-      <input pInputText id="email" type="email">
+      <input pInputText id="email" type="email" formControlName="email">
     </div>
     <div class="flex flex-column gap-2 mt-2">
       <label for="password">Password</label>
-      <input pInputText id="password" type="password">
+      <input pInputText id="password" type="password" formControlName="password">
     </div>
     <div class="actions mt-2 flex gap-2">
-      <p-button type="submit">Register</p-button>
+      <p-button type="submit" (onClick)="submit()" [disabled]="!form.valid">Register</p-button>
       <p-button text routerLink="/auth/login">Or login</p-button>
     </div>
   </form>

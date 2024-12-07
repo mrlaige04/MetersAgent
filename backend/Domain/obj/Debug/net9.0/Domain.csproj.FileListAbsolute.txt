@@ -1,0 +1,13 @@
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\bin\Debug\net9.0\Domain.deps.json
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\bin\Debug\net9.0\Domain.dll
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\bin\Debug\net9.0\Domain.pdb
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.csproj.AssemblyReference.cache
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.sourcelink.json
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.dll
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\refint\Domain.dll
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\Domain.pdb
+D:\KPI\4course1semestr\itvr\курсач\agent\backend\Domain\obj\Debug\net9.0\ref\Domain.dll

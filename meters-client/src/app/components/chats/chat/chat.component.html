@@ -1,16 +1,21 @@
 <div class="chat w-full">
-  <div class="content p-2">
-    @for (message of messages(); track message.id) {
-      <div class="message-container w-full flex justify-content-end">
-        <div class="message bg-gray-800 mb-2 p-2 px-3 border-round-3xl w-max">
-          {{message.text}}
+  @let thisChat = chat();
+
+  @if (thisChat !== null) {
+    <div class="content p-2">
+      @for (message of thisChat.messages; track message.id) {
+        <div class="message-container w-full flex {{message.isSystem ? 'system' : 'yours'}}" #messageRef (contextmenu)="onContextMenu($event, message)">
+          <div class="message mb-2 p-2 px-3 border-round-3xl w-max" [innerHtml]="message.contentHtml">
+          </div>
         </div>
-      </div>
-    }
-  </div>
+        <p-contextMenu [target]="messageRef" [model]="contextMenuItems" (onHide)="onHide()"></p-contextMenu>
+      }
+    </div>
+  }
 
   <div class="footer absolute bottom-0 left-0 right-0 flex gap-2 p-2">
     <input pInputText type="text" class="flex-1" [(ngModel)]="text" name="text" placeholder="Type something...">
     <p-button [disabled]="isLoading()" (onClick)="sendMessage()">Send</p-button>
   </div>
 </div>
+

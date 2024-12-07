@@ -1,12 +1,17 @@
 <div class="chats-list">
-  @for (chat of chats(); track chat.id) {
-    <div class="chat flex flex-row justify-content-between mt-2 cursor-pointer align-items-center py-1 px-2 border-round" routerLink="/chats/{{chat.id}}">
-      <div class="label">{{chat.name}}</div>
-      <div class="actions">
-        <p-button icon="pi pi-trash" text></p-button>
+  <div class="create-new">
+    <p-button (onClick)="openCreateDialog()">Start new chat</p-button>
+  </div>
+  <div class="chats mt-4">
+    @for (chat of chats(); track chat.id) {
+      <div class="chat flex shadow-3 flex-row justify-content-between mt-2 cursor-pointer align-items-center py-1 px-2 border-round" routerLink="/chats/{{chat.id}}">
+        <div class="label">{{chat.title}}</div>
+        <div class="actions">
+          <p-button icon="pi pi-trash" text (onClick)="deleteChat($event, chat.id)"></p-button>
+        </div>
       </div>
-    </div>
-  } @empty {
-    No chats :(
-  }
+    } @empty {
+      No chats :(
+    }
+  </div>
 </div>

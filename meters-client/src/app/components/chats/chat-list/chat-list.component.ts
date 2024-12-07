@@ -1,7 +1,12 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {ChatLink} from '../../../models/chats/chat-link';
 import {RouterLink} from '@angular/router';
 import {Button} from 'primeng/button';
+import {ChatService} from '../../../services/chats/chat.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {tap} from 'rxjs';
+import {DialogService} from 'primeng/dynamicdialog';
+import {CreateChatModalComponent} from '../create-chat-modal/create-chat-modal.component';
 
 @Component({
   selector: 'app-chat-list',
@@ -13,18 +18,56 @@ import {Button} from 'primeng/button';
   templateUrl: './chat-list.component.html',
   styleUrl: './chat-list.component.scss'
 })
-export class ChatListComponent {
-  private _chats: WritableSignal<ChatLink[]> = signal([
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-    { id: 1, name: 'Test' },
-  ]);
+export class ChatListComponent implements OnInit {
+  private dialogService = inject(DialogService);
+  private destroyRef = inject(DestroyRef);
+  private chatService = inject(ChatService);
+  private _chats: WritableSignal<ChatLink[]> = signal([]);
   public chats = this._chats.asReadonly();
+
+  ngOnInit() {
+    this.chatService.getChats()
+      .pipe(
+        tap((chats) => {
+          this._chats.set(chats);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe();
+  }
+
+  openCreateDialog() {
+    const dialogRef = this.dialogService.open(CreateChatModalComponent, {
+      modal: true,
+      header: 'Create new chat'
+    });
+
+    dialogRef.onClose
+      .pipe(
+        tap((newChat?: ChatLink | null) => {
+          if (newChat) {
+            this._chats.update(c => [...c, newChat])
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe();
+  }
+
+  deleteChat(event: Event, id: number) {
+    event.stopPropagation();
+    this.chatService.deleteChat(id)
+      .pipe(
+        tap((success) => {
+          if (success.isSuccess) {
+            this.removeChat(id);
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe();
+  }
+
+  private removeChat(id: number) {
+    const chats = this._chats();
+    const filteredChats = chats.filter(c => c.id !== id);
+    this._chats.set(filteredChats);
+  }
 }

@@ -1,5 +1,7 @@
 import {BaseEntity} from '../base/base-entity';
+import {ChatMessage} from './message';
 
 export interface Chat extends BaseEntity {
-  name: string;
+  title: string;
+  messages: ChatMessage[];
 }
