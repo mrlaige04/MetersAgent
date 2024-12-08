@@ -8,7 +8,10 @@
 
     <div class="meta-info">
       <div class="switch-language">
-        <p-dropdown [ngModel]="selectedLanguage()" [options]="languages" (onChange)="onSelectLanguage($event)" optionLabel="name"/>
+        <p-dropdown [ngModel]="selectedLanguage()"
+                    [options]="languages"
+                    (onChange)="onSelectLanguage($event)"
+                    optionLabel="name"/>
       </div>
     </div>
   </div>

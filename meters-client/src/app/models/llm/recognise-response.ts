@@ -18,6 +18,7 @@ export interface ParamsForIntent {
 export interface IntentSendParams {
   METER_TYPE: MeterType;
   VALUE: number;
+  UNIT?: string;
 }
 
 export interface IntentReadParams {

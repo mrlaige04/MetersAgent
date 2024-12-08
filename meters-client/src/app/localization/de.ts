@@ -1,6 +1,11 @@
 export const DE_TRANSLATIONS = {
   UI: {
     'WELCOME': "😊 Willkommen im intelligenten Chat zur Übertragung von Indikatoren",
+    'WELCOME_NOT_AUTHED_MESSAGE': 'Sie müssen sich anmelden, um Ihre Chats sehen zu können.',
+    'WELCOME_EXAMPLES': {
+      'SEND': '🔼 Übertragen Sie Messwerte ganz einfach!',
+      'READ': '📊 Aber hol sie dir kraftvoll!'
+    },
     'HOME': "Hauptsächlich",
     'START_NEW_CHAT': "Erstellen Sie einen neuen Chat",
     'CHATS': "Chats",
@@ -39,7 +44,8 @@ export const DE_TRANSLATIONS = {
     },
     'METERS_MESSAGES': {
       'NO_METERS': '🚫 Jetzt haben Sie keine Indikatoren mehr. Aber Sie können es beheben, lassen Sie es uns einfach wissen.',
-      'METERS_LIST': '💪 Hier sind Ihre aussagekräftigen Indikatoren:'
+      'METERS_LIST': '💪 Hier sind Ihre aussagekräftigen Indikatoren:',
+      'METER_SENT': '✅ Das ist es! So übertragen Sie Indikatoren einfach.'
     }
   }
 }

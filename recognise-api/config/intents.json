@@ -9,6 +9,10 @@
             "VALUE": {
                 "description": "Value of the meter reading",
                 "required": true
+            },
+            "UNIT": {
+                "description": "Unit of the meter reading",
+                "required": false
             }
         }
     },

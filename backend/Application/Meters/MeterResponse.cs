@@ -8,4 +8,5 @@ public class MeterResponse
     public MeterType Type { get; set; }
     public double Value { get; set; }
     public DateTime Date { get; set; }
+    public string? Unit { get; set; }
 }

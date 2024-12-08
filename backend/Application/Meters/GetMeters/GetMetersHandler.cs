@@ -21,6 +21,7 @@ public class GetMetersHandler(IMeterRepository meterRepository, ICurrentUser cur
             Type = m.Type,
             Date = m.UpdatedAt ?? m.CreatedAt,
             Value = m.Value,
+            Unit = m.Unit,
         }).ToList();
     }
 }

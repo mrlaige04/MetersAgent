@@ -5,4 +5,5 @@ export interface Meter extends BaseEntity {
   type: MeterType;
   value: number;
   date: Date;
+  unit?: string;
 }

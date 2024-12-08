@@ -19,6 +19,7 @@ public class CreateMeterHandler(IMeterRepository meterRepository, ICurrentUser c
             Type = request.Type,
             Value = request.Value,
             OwnerId = userId,
+            Unit = request.Unit,
         };
         
         var createdMeter = await meterRepository.CreateAsync(meter, cancellationToken);

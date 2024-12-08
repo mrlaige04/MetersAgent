@@ -8,6 +8,7 @@ import {AuthRequest} from '../../../models/auth/auth-request';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, EMPTY, tap} from 'rxjs';
 import {TranslatePipe} from '../../../services/language/translate.pipe';
+import {CardModule} from 'primeng/card';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ import {TranslatePipe} from '../../../services/language/translate.pipe';
     InputTextModule,
     RouterLink,
     ReactiveFormsModule,
-    TranslatePipe
+    TranslatePipe,
+    CardModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',

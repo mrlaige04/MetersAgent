@@ -1,6 +1,11 @@
 export const EN_TRANSLATIONS = {
   UI: {
     'WELCOME': "😊 Welcome to the intelligent chat of the transfer of indicators",
+    'WELCOME_NOT_AUTHED_MESSAGE': 'You need to log in to see your chats.',
+    'WELCOME_EXAMPLES': {
+      'SEND': '🔼 Transfer metrics with ease!',
+      'READ': '📊 But get them powerfully!'
+    },
     'HOME': "Home",
     'START_NEW_CHAT': "Create new chat",
     'CHATS': "Chats",
@@ -39,7 +44,8 @@ export const EN_TRANSLATIONS = {
     },
     'METERS_MESSAGES': {
       'NO_METERS': '🚫 Now you have no indicators. But you can fix it, just let us know.',
-      'METERS_LIST': '💪 Here are your powerful indicators:'
+      'METERS_LIST': '💪 Here are your powerful indicators:',
+      'METER_SENT': '✅ That\'s it! How to easily transfer indicators.'
     }
   }
 }

@@ -8,6 +8,7 @@ import {AuthRequest} from '../../../models/auth/auth-request';
 import {catchError, EMPTY, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslatePipe} from '../../../services/language/translate.pipe';
+import {CardModule} from 'primeng/card';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ import {TranslatePipe} from '../../../services/language/translate.pipe';
     InputTextModule,
     RouterLink,
     ReactiveFormsModule,
-    TranslatePipe
+    TranslatePipe,
+    CardModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

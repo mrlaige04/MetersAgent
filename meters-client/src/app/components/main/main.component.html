@@ -1,7 +1,22 @@
 <div class="main p-2 px-4">
   <h2>{{'Welcome to meters agent!'|translate:'UI:WELCOME'}} </h2>
 
+  @if (isAuthenticated()) {
   <div class="recent-chats mt-4">
     <app-chat-list></app-chat-list>
   </div>
+  } @else {
+    <p>{{''|translate:'UI:WELCOME_NOT_AUTHED_MESSAGE'}}</p>
+
+    <div class="site-description">
+      <div class="send-message">
+        <h4>{{ 'З легкістю передавай показники!'|translate:'UI:WELCOME_EXAMPLES:SEND' }}</h4>
+        <img alt="" src="send_example.png" class="w-full">
+      </div>
+      <div class="read-message text-left mt-5">
+        <h4>{{ 'Та потужно отримуй їх!'|translate:'UI:WELCOME_EXAMPLES:READ' }}</h4>
+        <img alt="" src="read_example.png" class="w-min">
+      </div>
+    </div>
+  }
 </div>

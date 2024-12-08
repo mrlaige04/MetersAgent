@@ -210,17 +210,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       if (typedResult.length > 0) {
         message += `${this.translatePipe.transform('','UI:METERS_MESSAGES:METERS_LIST')} <br>`
         typedResult.forEach((m) => {
-          message += `📆 ${this.datePipe.transform(m.date, 'MMM, d')}: ${m.value} <br>`
+          message += `📆 ${this.datePipe.transform(m.date, 'MMM, d',undefined, this.selectedLanguage().code)}: ${m.value} ${m.unit ?? ''} <br>`
         });
       } else {
         message = this.translatePipe.transform('', 'UI:METERS_MESSAGES:NO_METERS');
       }
-    } else  {
-      debugger
+    } else if (intent === 'SEND') {
+      message = this.translatePipe.transform('', 'UI:METERS_MESSAGES:METER_SENT');
+    } else {
       message = this.getTranslatedError(recogniseResponse.message);
     }
 
-    if (message.trim().length === 0)
+    if (message?.trim().length === 0)
       message = this.translatePipe.transform('', 'UI:RESULT_ERRORS:UNEXPECTED_ERROR');
 
     this.createMessage(message, true);
@@ -231,8 +232,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.chatService.addMessage(this.chatId()!, message)
       .pipe(
         tap((message) => {
-          //if (message.isSystem) this.text.set('');
-
           this._chat.update(c => {
             return { ...c!, messages: [...c!.messages, message] }
           })

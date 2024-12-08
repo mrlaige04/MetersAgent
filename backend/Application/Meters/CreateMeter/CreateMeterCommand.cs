@@ -8,4 +8,5 @@ public class CreateMeterCommand : ICommand<Success>
 {
     public MeterType Type { get; set; }
     public double Value { get; set; }
+    public string? Unit { get; set; }
 }

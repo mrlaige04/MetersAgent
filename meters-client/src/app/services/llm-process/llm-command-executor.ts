@@ -18,7 +18,8 @@ export class LlmCommandExecutor {
   processSend(request: IntentSendParams) {
     return this.metersService.createMeter({
       type: request.METER_TYPE,
-      value: request.VALUE
+      value: request.VALUE,
+      unit: request.UNIT
     });
   }
 

@@ -17,7 +17,8 @@ export class MetersService {
     const url = `${this.prefix}`;
     return this.baseClient.post<any, Success>(url, {
       type: MeterType[request.type],
-      value: request.value
+      value: request.value,
+      unit: request.unit
     });
   }
 
