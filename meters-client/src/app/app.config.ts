@@ -9,6 +9,8 @@ import {textProcessorApiProvider} from './configs/text-processor';
 import {tokenInterceptor} from './common/http/token-interceptor';
 import {DialogService} from 'primeng/dynamicdialog';
 import {handleUnauthorizedInterceptor} from './common/http/handle-unauthrorized.interceptor';
+import {NotificationService} from './services/notifications/notifications.service';
+import {MessageService} from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +20,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([tokenInterceptor, handleUnauthorizedInterceptor])),
     backendApiProvider,
     textProcessorApiProvider,
-    DialogService
+    DialogService,
+    MessageService,
+    NotificationService
   ]
 };

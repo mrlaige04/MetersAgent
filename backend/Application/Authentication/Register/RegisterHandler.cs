@@ -29,6 +29,6 @@ public class RegisterHandler(
         var errors = result.Errors
             .ToDictionary(e => e.Code, object (e) => e.Description);
         
-        return Error.Validation("User.Invalid", "User cannot be created", errors);
+        return Error.Validation("User.Conflict", "User cannot be created", errors);
     }
 }

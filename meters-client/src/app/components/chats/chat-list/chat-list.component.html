@@ -1,6 +1,6 @@
 <div class="chats-list">
   <div class="create-new">
-    <p-button (onClick)="openCreateDialog()">Start new chat</p-button>
+    <p-button (onClick)="openCreateDialog()">{{ 'Start new chat' | translate:'UI:START_NEW_CHAT' }}</p-button>
   </div>
   <div class="chats mt-4">
     @for (chat of chats(); track chat.id) {
@@ -11,7 +11,7 @@
         </div>
       </div>
     } @empty {
-      No chats :(
+      {{ 'No chats :('|translate:'UI:NO_CHATS' }}
     }
   </div>
 </div>

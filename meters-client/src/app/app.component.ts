@@ -5,11 +5,13 @@ import {SidebarModule} from 'primeng/sidebar';
 import {LayoutsService} from './services/layouts/layouts.service';
 import {Button} from 'primeng/button';
 import {ChatListComponent} from './components/chats/chat-list/chat-list.component';
+import {TranslatePipe} from './services/language/translate.pipe';
+import {ToastModule} from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, SidebarModule, Button, ChatListComponent],
+  imports: [RouterOutlet, HeaderComponent, SidebarModule, Button, ChatListComponent, TranslatePipe, ToastModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

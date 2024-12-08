@@ -1,0 +1,24 @@
+﻿services:
+  api:
+    image: api
+    build:
+      context: ..
+      dockerfile: backend/Api/Dockerfile
+    ports:
+      - "7007:7007"
+      
+  recognise.api:
+    image: recognize-api
+    build:
+      context: ..
+      dockerfile: recognise-api/Dockerfile
+    ports:
+      - "8008:8000"
+    
+  client:
+    image: meters-client
+    build:
+      context: ..
+      dockerfile: meters-client/Dockerfile
+    ports:
+      - "4200:4200"

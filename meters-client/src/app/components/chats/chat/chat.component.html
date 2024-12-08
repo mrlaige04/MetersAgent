@@ -1,21 +1,33 @@
 <div class="chat w-full">
   @let thisChat = chat();
 
+  <div class="header bg-gray-800 px-3 flex flex-row align-items-center justify-content-between">
+    <h3 class="title">{{thisChat?.title}}</h3>
+  </div>
+
   @if (thisChat !== null) {
-    <div class="content p-2">
+    <div class="content p-2" #messageContainer>
       @for (message of thisChat.messages; track message.id) {
-        <div class="message-container w-full flex {{message.isSystem ? 'system' : 'yours'}}" #messageRef (contextmenu)="onContextMenu($event, message)">
-          <div class="message mb-2 p-2 px-3 border-round-3xl w-max" [innerHtml]="message.contentHtml">
+        <div class="message-container w-full flex {{message.isSystem ? 'system' : 'yours'}}">
+          <div class="message mb-2 p-2 px-3 border-round-2xl w-max text-justify line-height-3" [innerHtml]="message.contentHtml" #messageRef (contextmenu)="onContextMenu($event, message)">
           </div>
         </div>
         <p-contextMenu [target]="messageRef" [model]="contextMenuItems" (onHide)="onHide()"></p-contextMenu>
+      }
+      @if (isLoading()) {
+        <app-chat-loading></app-chat-loading>
       }
     </div>
   }
 
   <div class="footer absolute bottom-0 left-0 right-0 flex gap-2 p-2">
-    <input pInputText type="text" class="flex-1" [(ngModel)]="text" name="text" placeholder="Type something...">
-    <p-button [disabled]="isLoading()" (onClick)="sendMessage()">Send</p-button>
+    <input (keydown.enter)="sendMessage()"
+           pInputText type="text"
+           class="flex-1"
+           [(ngModel)]="text"
+           name="text"
+           placeholder="{{'type'|translate:'UI:INPUT_PLACEHOLDER'}}">
+    <p-button [disabled]="isLoading()" (onClick)="sendMessage()">{{ 'Send'|translate:'UI:SEND' }}</p-button>
   </div>
 </div>
 

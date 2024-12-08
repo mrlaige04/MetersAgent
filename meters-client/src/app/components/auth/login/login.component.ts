@@ -7,6 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {AuthRequest} from '../../../models/auth/auth-request';
 import {catchError, EMPTY, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TranslatePipe} from '../../../services/language/translate.pipe';
 
 @Component({
   selector: 'app-login',
@@ -15,15 +16,18 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
     Button,
     InputTextModule,
     RouterLink,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslatePipe
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  providers: [TranslatePipe]
 })
 export class LoginComponent {
   private destroyRef = inject(DestroyRef);
   private authClient = inject(AuthClient);
   private router = inject(Router);
+  private translatePipe = inject(TranslatePipe);
 
   public triedToSubmit = false;
   public error?: string;
@@ -47,9 +51,9 @@ export class LoginComponent {
       .pipe(
         catchError(err => {
           if (err.status === 401) {
-            this.error = 'Invalid credentials';
+            this.error = this.translatePipe.transform('', 'UI:AUTH:INVALID_CREDENTIALS')
           } else if (err.status === 404) {
-            this.error = err.error.description
+            this.error = this.translatePipe.transform('', 'UI:AUTH:NOT_FOUND')
           }
           return EMPTY;
         }),

@@ -1,4 +1,15 @@
-import {Component, DestroyRef, inject, model, OnInit, signal, WritableSignal} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit, ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  model,
+  OnInit,
+  signal, ViewChild,
+  viewChild
+} from '@angular/core';
 import {InputTextModule} from 'primeng/inputtext';
 import {Button} from 'primeng/button';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -14,9 +25,18 @@ import {ContextMenuModule} from 'primeng/contextmenu';
 import {MenuItem} from 'primeng/api';
 import {LLMProcessService} from '../../../services/llm-process/llm-process.service';
 import {LlmCommandExecutor} from '../../../services/llm-process/llm-command-executor';
-import {AllowedIntents, ParamsForIntent} from '../../../models/llm/recognise-response';
+import {AllowedIntents, RecogniseResponse} from '../../../models/llm/recognise-response';
 import {Meter} from '../../../models/meters/meter';
 import {DatePipe} from '@angular/common';
+import {DropdownModule} from 'primeng/dropdown';
+import {LanguageService} from '../../../services/language/language.service';
+import {TranslatePipe} from '../../../services/language/translate.pipe';
+import {ChatLoadingComponent} from '../../layouts/chat-loading/chat-loading.component';
+
+export interface Language {
+  code: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-chat',
@@ -26,18 +46,26 @@ import {DatePipe} from '@angular/common';
     Button,
     ScrollPanelModule,
     FormsModule,
-    ContextMenuModule
+    ContextMenuModule,
+    DropdownModule,
+    TranslatePipe,
+    ChatLoadingComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe, TranslatePipe]
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
+  private cdRef = inject(ChangeDetectorRef);
   private datePipe = inject(DatePipe);
+  private translatePipe = inject(TranslatePipe);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private chatService = inject(ChatService);
   private destroyRef = inject(DestroyRef);
+
+  private languageService = inject(LanguageService);
+  public selectedLanguage = this.languageService.currentLanguage;
 
   private llmProcessService = inject(LLMProcessService);
   private llmExecutorService = inject(LlmCommandExecutor);
@@ -47,6 +75,8 @@ export class ChatComponent implements OnInit {
   public chat = this._chat.asReadonly();
 
   public isLoading = signal(false);
+
+  @ViewChild('messageContainer', { static: false }) private messageContainer!: ElementRef;
 
   public readonly contextMenuItems: MenuItem[] = [{
     label: 'Delete',
@@ -58,12 +88,24 @@ export class ChatComponent implements OnInit {
     this.getChat();
   }
 
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom() {
+    if (this.messageContainer) {
+      const container = this.messageContainer.nativeElement as HTMLElement;
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
   private getChat() {
     const id = this.route.snapshot.params['id'];
     const numId = parseInt(id, 10);
     if (isNaN(numId)) {
       this.router.navigate(['/'])
-      return; // TODO: RETURN TO CHAT LIST
+      return;
     }
 
     this.chatId.set(numId);
@@ -77,9 +119,17 @@ export class ChatComponent implements OnInit {
         }),
         tap((chat: Chat) => {
           this._chat.set(chat);
+          if (chat.messages.length === 0) {
+            this.sendFirstWelcomeMessage();
+          }
         }),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe();
+  }
+
+  private sendFirstWelcomeMessage() {
+    const message = this.translatePipe.transform('', 'UI:INITIAL_CHAT_MESSAGE');
+    this.createMessage(message, true);
   }
 
   public text = model<string>('');
@@ -94,18 +144,19 @@ export class ChatComponent implements OnInit {
     this.selectedMessage.set(null);
   }
 
+
   sendMessage() {
     if (this.text()!.trim().length === 0) return;
 
     this.isLoading.set(true);
     this.sendUserMessage();
 
-    this.llmProcessService.recognise({ text: this.text() })
+    const text = this.text();
+    this.text.set('');
+
+    this.llmProcessService.recognise({ text, lang: this.selectedLanguage().name })
       .pipe(
         catchError(error => {
-          if (error.status === 400) {
-            console.log(error)
-          }
           return EMPTY;
         }),
         tap((response) => {
@@ -115,28 +166,34 @@ export class ChatComponent implements OnInit {
             const intent = response.intent;
             const params = response.params;
 
-            this.executeIntent(intent, params);
+            this.executeIntent(intent, params, response);
           } else {
-            this.createMessage(response.message, true);
+            this.createMessage(this.getTranslatedError(response.message), true);
           }
         }),
         tap(),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+          this.scrollToBottom();
+        })
       ).subscribe();
-
-    this.isLoading.set(false);
   }
 
-  private executeIntent(intent: AllowedIntents, params: any) {
+  private getTranslatedError(error: string) {
+    return this.translatePipe.transform('', `UI:RESULT_ERRORS:${error}`);
+  }
+
+  private executeIntent(intent: AllowedIntents, params: any, recogniseResponse: RecogniseResponse) {
     const request = this.llmExecutorService.executeIntent(intent, params);
     if (!request) {
-      this.createMessage('Unknown command', true);
+      this.createMessage(this.getTranslatedError('UNKNOWN_COMMAND'), true);
       return;
     }
 
     request.pipe(
       tap(result => {
-        this.processIntentResult(intent, result);
+        this.processIntentResult(intent, result, recogniseResponse);
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
@@ -146,22 +203,25 @@ export class ChatComponent implements OnInit {
     this.createMessage(this.text(), false);
   }
 
-  private processIntentResult(intent: AllowedIntents, result: any) {
+  private processIntentResult(intent: AllowedIntents, result: any, recogniseResponse: RecogniseResponse) {
     let message = '';
     if (intent === 'READ') {
       const typedResult = result as Meter[];
       if (typedResult.length > 0) {
+        message += `${this.translatePipe.transform('','UI:METERS_MESSAGES:METERS_LIST')} <br>`
         typedResult.forEach((m) => {
           message += `📆 ${this.datePipe.transform(m.date, 'MMM, d')}: ${m.value} <br>`
         });
       } else {
-        message = 'No meters available :('
+        message = this.translatePipe.transform('', 'UI:METERS_MESSAGES:NO_METERS');
       }
-    } else if (intent === 'SEND') {
-      message = 'Дані успішно відправлено!'
-    } else {
-      message = 'Unknown command! Please try again.'
+    } else  {
+      debugger
+      message = this.getTranslatedError(recogniseResponse.message);
     }
+
+    if (message.trim().length === 0)
+      message = this.translatePipe.transform('', 'UI:RESULT_ERRORS:UNEXPECTED_ERROR');
 
     this.createMessage(message, true);
   }

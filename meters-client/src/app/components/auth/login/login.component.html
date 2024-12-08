@@ -1,22 +1,22 @@
 <div class="login flex justify-content-center align-items-center">
   <form [formGroup]="form">
-    <h2>Login</h2>
+    <h2>{{ 'Login' | translate:'UI:AUTH:LOGIN' }}</h2>
     @if (triedToSubmit && error) {
-      <div class="error bg-red-200 p-2 text-red-600 mb-2 border-round">
+      <div class="error border-1 border-red-600 p-2 text-red-600 mb-2 border-round">
         {{error}}
       </div>
     }
     <div class="flex flex-column gap-2">
-      <label for="email">Email</label>
+      <label for="email">{{ 'Email' | translate:'UI:AUTH:EMAIL' }}</label>
       <input pInputText id="email" type="email" formControlName="email">
     </div>
     <div class="flex flex-column gap-2 mt-2">
-      <label for="password">Password</label>
+      <label for="password">{{ 'Password' | translate:'UI:AUTH:PASSWORD' }}</label>
       <input pInputText id="password" type="password" formControlName="password">
     </div>
     <div class="actions mt-2 flex gap-2">
-      <p-button type="submit" (onClick)="submit()" [disabled]="!form.valid">Login</p-button>
-      <p-button text routerLink="/auth/register">Or create account</p-button>
+      <p-button type="submit" (onClick)="submit()" [disabled]="!form.valid">{{ 'Login' | translate:'UI:AUTH:LOGIN' }}</p-button>
+      <p-button text routerLink="/auth/register">{{ 'Register' | translate:'UI:AUTH:REGISTER' }}</p-button>
     </div>
   </form>
 </div>

@@ -6,7 +6,8 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {AuthClient} from '../../../services/auth/auth-client';
 import {AuthRequest} from '../../../models/auth/auth-request';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {tap} from 'rxjs';
+import {catchError, EMPTY, tap} from 'rxjs';
+import {TranslatePipe} from '../../../services/language/translate.pipe';
 
 @Component({
   selector: 'app-register',
@@ -15,17 +16,21 @@ import {tap} from 'rxjs';
     Button,
     InputTextModule,
     RouterLink,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslatePipe
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
+  providers: [TranslatePipe]
 })
 export class RegisterComponent {
   private destroyRef = inject(DestroyRef);
   private authClient = inject(AuthClient);
   private router = inject(Router);
+  private translatePipe = inject(TranslatePipe);
 
   public triedToSubmit = false;
+  public error?: string;
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -44,6 +49,18 @@ export class RegisterComponent {
     };
     this.authClient.register(request)
       .pipe(
+        catchError(err => {
+          const metadata = err.error.metadata;
+          if (Object.hasOwn(metadata, 'DuplicateUserName')) {
+            this.error = this.translatePipe.transform('', 'UI:AUTH:CONFLICT');
+          } else {
+            const props = Object.keys(metadata);
+            if (props.some(p => p.toLowerCase().includes('password'))) {
+              this.error = this.translatePipe.transform('', 'UI:AUTH:PASSWORD_TROUBLE');
+            }
+          }
+          return EMPTY;
+        }),
         tap(async (token) => {
           this.authClient.saveToken(token);
           await this.router.navigate(['/']);

@@ -19,13 +19,22 @@ intents_str = "\n".join([f"{intent}: {data['description']}" for intent, data in 
 meter_types_str = "\n".join([f"{meter_type}: {data['description']}" for meter_type, data in meter_types.items()])
 
 def build_prompt(text: str, lang="en"):
-    params_template = ", ".join([f'\"{param}\": <value>' for param in intents.get('SEND', {}).get('required_params', [])])
+    params_template = "\n".join([
+        f"{intent_name}: " + ", ".join([
+            f"{param} ({'required' if intent_data['required_params'][param]['required'] else 'optional'}) - {intent_data['required_params'][param].get('description', '')}"
+            for param in intent_data.get('required_params', {}) 
+        ])
+        for intent_name, intent_data in intents.items() 
+    ])
 
     return f"""
     Your task is to determine the intent from the user's input and extract the relevant parameters for the identified action.
     You must return the response in the following JSON format.
     The available intents are:
-    {intents_str}
+    {intents_str}.
+    Each intent has the following parameters:
+    {params_template}
+
     The available meter types are:
     {meter_types_str}
 
@@ -34,16 +43,16 @@ def build_prompt(text: str, lang="en"):
     Please respond with the following JSON format:
     {{
         "intent": "{{intent}}",
-        "params": {{
-            {params_template}
-        }},
-        "message": "Your message here"
+        "params": {{}}  # Fill in the parameters here, based on the intent
+        "success": <true/false>,
+        "message": "{{message}}"
     }}
 
-    If the meter type is not supported, return a message "Unsupported meter type".
-    If any required parameters are missing for the identified intent, return success as false and indicate which parameters are missing.
-    If the input cannot be parsed or does not match a valid command, return success as false and the message "Unknown command".
-    For the message text use language: {lang}
+    Instructions:
+    1. If the input cannot be parsed or does not match a valid intent, set "intent" to "UNKNOWN" and return the message "UNKNOWN_COMMAND".
+    2. If any required parameters are missing, set "intent" to the identified intent, set success to false, and return the message "MISSING_PARAMS".
+    3. If the meter type is not supported, return the message "TYPE_UNSUPPORTED".
+    4. If the input is valid and all parameters are correctly identified, set success to true and "message" to an empty string.
     """
 
 def create_chat_prompt(text: str, lang="en"):
@@ -68,8 +77,11 @@ def process_prompt(text: str, lang="en") -> ResponseModel:
     try:
         chat_prompt, query, lang = create_chat_prompt(text, lang)
 
-        # Генерация запроса к модели
         prompt = build_prompt(text, lang)
+
+        print(f'{prompt}\n\n\n')
+
+
         chain = chat_prompt | llm
         result = chain.invoke(query)
 
@@ -84,58 +96,53 @@ def process_prompt(text: str, lang="en") -> ResponseModel:
         if not result_text.strip():
             raise ValueError("Received empty or invalid result text")
         
-        response_json = clean_json_string(result_text)  # если нужно очистить строку
+        response_json = clean_json_string(result_text)
         try:
-            response_json = json.loads(response_json)  # парсим строку
+            response_json = json.loads(response_json)  
         except json.JSONDecodeError:
             raise ValueError("Error decoding the JSON response")
+        
+        print(f'{response_json}\n\n\n')
 
-        # Проверяем наличие обязательных параметров
         if 'intent' not in response_json:
             response_json['intent'] = 'UNKNOWN'
 
-        # Добавляем параметр success, если его нет
         if 'success' not in response_json:
             response_json['success'] = False
 
-        # Если success = False, то обрабатываем недостающие параметры
-        if response_json.get('success') == False:
-            missing_params = []
-            intent = response_json.get('intent')
+        # if response_json.get('success') == False:
+        #     missing_params = []
+        #     intent = response_json.get('intent')
 
-            # Проверка на наличие обязательных параметров для текущего intent
-            if intent in intents:
-                required_params = intents[intent].get('required_params', [])
-                for param in required_params:
-                    # Если параметр отсутствует или null/undefined
-                    if param not in response_json['params'] or response_json['params'][param] is None:
-                        missing_params.append(param)
+        #     if intent in intents:
+        #         required_params = intents[intent].get('required_params', [])
+        #         for param in required_params:
+        #             # Если параметр отсутствует или null/undefined
+        #             if param not in response_json['params'] or response_json['params'][param] is None:
+        #                 missing_params.append(param)
 
-            # Если параметры отсутствуют, возвращаем ошибку с отсутствующими параметрами
-            if missing_params:
-                response_json['message'] = f"Required params are missing: {', '.join(missing_params)}"
-                return ResponseModel(**response_json)
+        #     if missing_params:
+        #         response_json['message'] = f"Required params are missing: {', '.join(missing_params)}"
+        #         return ResponseModel(**response_json)
 
-            # Если параметров нет, а message не найден, то возвращаем общую ошибку
-            response_json['message'] = 'Unknown error'
-            return ResponseModel(**response_json)
+        #     # Если параметров нет, а message не найден, то возвращаем общую ошибку
+        #     response_json['message'] = 'Unknown error'
+        #     return ResponseModel(**response_json)
 
-        # Проверка на поддержку meter type
-        meter_type = response_json['params'].get('METER_TYPE')
-        if meter_type not in meter_types:
-            response_json['success'] = False
-            response_json['message'] = 'Unsupported meter type'
-            return ResponseModel(**response_json)
+        # meter_type = response_json['params'].get('METER_TYPE')
+        # if meter_type not in meter_types:
+        #     response_json['success'] = False
+        #     response_json['message'] = 'Unsupported meter type'
+        #     return ResponseModel(**response_json)
 
-        # Проверка на поддержку intent
-        intent = response_json['intent']
-        if intent not in intents:
-            response_json['success'] = False
-            response_json['message'] = 'Unsupported intent'
-            return ResponseModel(**response_json)
+        # intent = response_json['intent']
+        # if intent not in intents:
+        #     response_json['success'] = False
+        #     response_json['message'] = 'Unsupported intent'
+        #     return ResponseModel(**response_json)
 
-        response_json['success'] = True
-        response_json['message'] = f'Successfully processed the {intent} intent'
+        # response_json['success'] = True
+        # response_json['message'] = f'Successfully processed the {intent} intent'
         return ResponseModel(**response_json)
 
     except ValueError as e:

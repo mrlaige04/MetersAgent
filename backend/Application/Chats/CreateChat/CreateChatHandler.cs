@@ -13,18 +13,11 @@ public class CreateChatHandler(IChatRepository repository, ICurrentUser currentU
         var userIdStr = currentUser.UserId;
         if (!int.TryParse(userIdStr, out var userId))
             return Error.Unauthorized();
-
-        var welcomeMessage = new Message
-        {
-            ContentHtml = "Welcome to the chat!",
-            IsSystem = true
-        };
         
         var chat = new Chat
         {
             UserId = userId,
-            Title = request.Title,
-            Messages = [welcomeMessage]
+            Title = request.Title
         };
         
         var createdChat = await repository.CreateAsync(chat, cancellationToken);

@@ -4,6 +4,7 @@
     <router-outlet></router-outlet>
   </div>
 </div>
+<p-toast/>
 
 <p-sidebar [visible]="sidebarOpened()" (visibleChange)="setSidebarOpened($event)">
   <ng-template pTemplate="header">
@@ -14,7 +15,9 @@
   </ng-template>
   <ng-template pTemplate="footer">
     <div class="sidebar-footer">
-      <p-button styleClass="w-full flex justify-content-center" text>Logout</p-button>
+      <p-button styleClass="w-full flex justify-content-center" text>{{ 'Logout'|translate:'UI:AUTH:LOGOUT' }}</p-button>
     </div>
   </ng-template>
 </p-sidebar>
+
+

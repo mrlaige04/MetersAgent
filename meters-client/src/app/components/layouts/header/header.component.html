@@ -1,16 +1,22 @@
 <div class="topbar flex w-full shadow-2 p-2">
-  <div class="main-menu">
+  <div class="main-menu flex flex-row">
     @if (isAuthenticated()) {
       <p-button text icon="pi pi-align-justify" (onClick)="openSidebar()"></p-button>
     }
 
-    <p-button link routerLink="/">Home</p-button>
+    <p-button link routerLink="/">{{ 'Home' | translate:'UI:HOME' }}</p-button>
+
+    <div class="meta-info">
+      <div class="switch-language">
+        <p-dropdown [ngModel]="selectedLanguage()" [options]="languages" (onChange)="onSelectLanguage($event)" optionLabel="name"/>
+      </div>
+    </div>
   </div>
   <div class="routes flex justify-content-end gap-5 flex-1">
     @if (!isAuthenticated()) {
-      <p-button outlined routerLink="/auth">Login</p-button>
+      <p-button outlined routerLink="/auth">{{ 'Login' | translate:'UI:AUTH:LOGIN' }}</p-button>
     } @else {
-      <p-button outlined (onClick)="logout()">Logout</p-button>
+      <p-button outlined (onClick)="logout()">{{ 'Logout' | translate:'UI:AUTH:LOGOUT' }}</p-button>
     }
   </div>
 </div>

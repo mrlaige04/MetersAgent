@@ -1,10 +1,32 @@
 {
     "SEND": {
         "description": "Sending meter readings",
-        "required_params": ["METER_TYPE", "VALUE"]
+        "required_params": {
+            "METER_TYPE": {
+                "description": "Type of meter (e.g., gas, water, electricity)",
+                "required": true
+            },
+            "VALUE": {
+                "description": "Value of the meter reading",
+                "required": true
+            }
+        }
     },
     "READ": {
         "description": "Reading meter data",
-        "required_params": ["METER_TYPE", "START_DATE", "END_DATE"]
+        "required_params": {
+            "METER_TYPE": {
+                "description": "Type of meter (e.g., gas, water, electricity)",
+                "required": true
+            },
+            "START_DATE": {
+                "description": "Start date for reading data",
+                "required": false
+            },
+            "END_DATE": {
+                "description": "End date for reading data",
+                "required": false
+            }
+        }
     }
 }

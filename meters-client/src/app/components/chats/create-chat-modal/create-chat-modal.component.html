@@ -2,15 +2,15 @@
   <div class="form">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="title flex flex-column gap-1">
-        <label for="title">Title</label>
+        <label for="title">{{ 'Title' | translate:'UI:TITLE' }}</label>
         <input pInputText id="title" type="text" formControlName="title">
         @let control = form.get('title');
         @if ((control?.dirty || !control?.untouched) && control?.hasError('required')) {
-          <small class="text-red-500">This field is required.</small>
+          <small class="text-red-500">{{ 'This field is required.' | translate:'UI:FIELD_REQUIRED' }}</small>
         }
       </div>
       <div class="actions mt-3">
-        <p-button type="submit" [disabled]="!form.valid">Submit</p-button>
+        <p-button type="submit" [disabled]="!form.valid">{{ 'Submit'|translate:'UI:SUBMIT' }}</p-button>
       </div>
     </form>
   </div>

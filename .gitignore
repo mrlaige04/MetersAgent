@@ -170,3 +170,7 @@ meters-client/node_modules/.bin/acorn
 /meters-client/node_modules
 /.idea
 /telegram_bot
+/backend/Api/bin
+/backend/Api/bin
+/backend/Api/bin/Debug
+/backend/Api/obj

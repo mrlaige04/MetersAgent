@@ -1,2 +1,2 @@
-bash .\api-env\Scripts\activate
+start .\api-env\Scripts\activate
 uvicorn main:app
