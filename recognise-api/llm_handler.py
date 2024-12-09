@@ -29,18 +29,7 @@ def build_prompt(text: str, lang="en"):
 
     return f"""
     Your task is to determine the intent from the user's input and extract the relevant parameters for the identified action.
-    You must return the response in the following JSON format.
-    The available intents are:
-    {intents_str}.
-    Each intent has the following parameters:
-    {params_template}
-
-    The available meter types are:
-    {meter_types_str}
-
-    The user's input is: "{text}"
-
-    Please respond with the following JSON format:
+    You must return the response in the following JSON format:
     {{
         "intent": "{{intent}}",
         "params": {{}}  # Fill in the parameters here, based on the intent
@@ -48,11 +37,48 @@ def build_prompt(text: str, lang="en"):
         "message": "{{message}}"
     }}
 
+    Available intents:
+    {intents_str}
+
+    Each intent has the following parameters:
+    {params_template}
+
+    Available meter types:
+    {meter_types_str}
+
+    User input: "{text}"
+
     Instructions:
-    1. If the input cannot be parsed or does not match a valid intent, set "intent" to "UNKNOWN" and return the message "UNKNOWN_COMMAND".
-    2. If any required parameters are missing, set "intent" to the identified intent, set success to false, and return the message "MISSING_PARAMS".
-    3. If the meter type is not supported, return the message "TYPE_UNSUPPORTED".
-    4. If the input is valid and all parameters are correctly identified, set success to true and "message" to an empty string.
+    1. **Identify the intent from the user's input**:
+        a. Analyze the text to determine if it matches any available intent based on keywords or context. This step is very sensitive to context, ensuring the intent is correctly matched.
+        b. If no intent matches:
+            - Set "intent" to "UNKNOWN".
+            - Set "success" to false.
+            - Set "message" to "UNKNOWN_COMMAND".
+            Stop further processing.
+
+    2. **Process parameters** for the identified intent:
+        a. Extract the "METER_TYPE":
+            - If the type is not supported, set:
+                - "intent" to the identified intent.
+                - Include all parsed parameters in the "params" field.
+                - Set "success" to false.
+                - Set "message" to "TYPE_UNSUPPORTED".
+                Stop further processing.
+        b. Validate the required parameters:
+            - If any required parameter is missing or incorrectly identified, set:
+                - "intent" to the identified intent.
+                - Include all parsed parameters in the "params" field.
+                - Set "success" to false.
+                - Set "message" to "MISSING_PARAMS".
+                Stop further processing.
+
+    3. **Return the result**:
+        a. If the input is valid, the intent is recognized, all required parameters are present, and "METER_TYPE" is supported:
+            - Set "intent" to the identified intent.
+            - Include all parsed parameters in the "params" field.
+            - Set "success" to true.
+        - Set "message" to an empty string.
     """
 
 def create_chat_prompt(text: str, lang="en"):

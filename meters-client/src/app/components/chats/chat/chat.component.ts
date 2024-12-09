@@ -157,6 +157,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.llmProcessService.recognise({ text, lang: this.selectedLanguage().name })
       .pipe(
         catchError(error => {
+          this.createMessage(this.getTranslatedError('UNEXPECTED_ERROR'), true);
           return EMPTY;
         }),
         tap((response) => {
@@ -199,6 +200,24 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     ).subscribe();
   }
 
+  private keyUpMessageId?: number;
+
+  public onKeyUpSetPreviousMessage($event: Event) {
+    $event.stopPropagation();
+    let messages = this.chat()?.messages ?? [];
+    messages = messages.filter(m => !m.isSystem);
+    if (messages.length > 0) {
+      if (this.keyUpMessageId === undefined) {
+        this.keyUpMessageId = messages.length - 1;
+      } else if (this.keyUpMessageId > 0) {
+        this.keyUpMessageId--;
+      }
+
+      const message = messages.at(this.keyUpMessageId);
+      this.text.set(message?.contentHtml ?? '');
+    }
+  }
+
   private sendUserMessage() {
     this.createMessage(this.text(), false);
   }
@@ -223,7 +242,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     if (message?.trim().length === 0)
       message = this.translatePipe.transform('', 'UI:RESULT_ERRORS:UNEXPECTED_ERROR');
-
+    
     this.createMessage(message, true);
   }
 
